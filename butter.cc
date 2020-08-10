@@ -50,8 +50,7 @@ int main() {
             for (auto pr : adj[v]) {
                 int u = pr.first, d_vu = pr.second;
                 if (vis[u]) continue;
-                if (dist[u] > dist[v] + d_vu) dist[u] = dist[v] + d_vu;
-                pq.push({dist[u], u});
+                if (dist[u] > dist[v] + d_vu) dist[u] = dist[v] + d_vu, pq.push({dist[u], u});
             }
         }
         if (ncow == N && curd < bestd) bestd = curd; 
