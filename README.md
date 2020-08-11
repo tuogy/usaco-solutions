@@ -2,3 +2,4 @@
 
 Hard problems:
 - [camelot](camelot.cc) 
+- [nuggets](nuggets.cc)
