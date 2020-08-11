@@ -12,7 +12,9 @@ LANG: C++
 
 using namespace std;
 
-bool dp[2][250][250];
+int n_squares[251];
+bool line[250];
+int dp[2][250];
 
 int main() {
     ifstream fin("range.in");
@@ -21,26 +23,23 @@ int main() {
     int N;
     fin >> N;
     char x;
-    for (int i = 0; i < N; i++) {
+    memset(dp[0], 0, N * sizeof(int));
+    memset(n_squares, 0, (N + 1) * sizeof(int));
+    auto prev = dp[0], cur = dp[1];
+    for (int i = 0; i < N; i++, swap(prev, cur)) {
         for (int j = 0; j < N; j++) {
             fin >> x;
-            dp[0][i][j] = x == '1';
+            line[j] = x == '1';
+            if (line[j])
+                cur[j] = min({j ? cur[j - 1] : 0, j ? prev[j - 1] : 0, prev[j]}) + 1;
+            else cur[j] = 0;
+            n_squares[cur[j]]++;
         }
     }
-    auto prev = dp[0], cur = dp[1];
-    for (int s = 2, count = 0;; s++, count = 0, swap(cur, prev)) {
-        for (int i = 0; i < N; i++) {
-            for (int j = 0; j < N; j++) {
-                if (i == 0 || j == 0) cur[i][j] = false;
-                else if (prev[i][j] && prev[i - 1][j] && prev[i][j - 1] && prev[i - 1][j - 1]) {
-                    cur[i][j] = true;
-                }
-                else cur[i][j] = false;
-                count += cur[i][j];
-            }
-        }
-        if (count == 0) break;
-        else fout << s << " " << count << endl;
+    for (int i = 249; i >= 0; i--) n_squares[i] += n_squares[i + 1];
+    for (int i = 2; i <= 250; i++) {
+        if (n_squares[i]) fout << i << " " << n_squares[i] << endl;
+        else break;
     }
 
     return 0;
