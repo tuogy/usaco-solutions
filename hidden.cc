@@ -29,18 +29,19 @@ int main() {
     for (int i = 0; i < L; i++) fin >> s[i];
     for (int i = 0; i < L; i++) cl[i] = s[i] - 'a';
     for (int l = 1; l >> 1 < L; l <<= 1) {
-        auto p0 = p[0];
-        for (int i = 0; i < L; i++) p0[i] = i;
+        auto prev = p[0], cur = p[1];
+        for (int i = 0; i < L; i++) cur[i] = i;
         for (int k : {1, 0}) {
             memset(c, 0, (nc + 1) * sizeof(int));
+            swap(prev, cur);
             for (int i = 0; i < L; i++) c[cl[i]]++;
             for (int i = 1; i <= nc; i++) c[i] += c[i - 1];
-            for (int i = L - 1; i >= 0; i--) p[k][--c[cl[(p[k ^ 1][i] + k * l) % L]]] = p[k ^ 1][i];
+            for (int i = L - 1; i >= 0; i--) cur[--c[cl[(prev[i] + k * l) % L]]] = prev[i];
         }
         nc = -1;
         for (int i = 0; i < L; i++) {
-            if (i && cl[p0[i]] == cl[p0[i - 1]] && cl[(p0[i] + l) % L] == cl[(p0[i - 1] + l) % L]) cl[p0[i]] = nc;
-            else cl[p0[i]] = ++nc;
+            if (i && cl[cur[i]] == cl[cur[i - 1]] && cl[(cur[i] + l) % L] == cl[(cur[i - 1] + l) % L]) cl[cur[i]] = nc;
+            else cl[cur[i]] = ++nc;
         }
     }
     int bestc = cl[0], besti = 0;
