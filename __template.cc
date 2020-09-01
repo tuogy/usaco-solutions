@@ -6,6 +6,7 @@ LANG: C++
 
 #ifndef __clang__
     #include <bits/stdc++.h>
+    #define cout fout
 #endif
 #include <iostream>
 #include <fstream>
