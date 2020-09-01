@@ -15,35 +15,37 @@ LANG: C++
 
 using namespace std;
 
-struct pri {
-    int l, r, i;
-};
-
-int c[100000];
-pri p[100000];
+const int mxn = 100000;
+int cl[mxn], c[mxn];
+int p[2][mxn];
 
 int main() {
     ifstream fin("hidden.in");
     ofstream fout("hidden.out");
     
-    int L;
+    int L, nc = 26;
     fin >> L;
     string s(L, ' ');
     for (int i = 0; i < L; i++) fin >> s[i];
-    for (int i = 0; i < L; i++) c[i] = s[i] - 'a';
+    for (int i = 0; i < L; i++) cl[i] = s[i] - 'a';
     for (int l = 1; l >> 1 < L; l <<= 1) {
-        for (int i = 0; i < L; i++) {
-            p[i].l = c[i], p[i].r = c[(i + l) % L], p[i].i = i;
+        auto p0 = p[0];
+        for (int i = 0; i < L; i++) p0[i] = i;
+        for (int k : {1, 0}) {
+            memset(c, 0, (nc + 1) * sizeof(int));
+            for (int i = 0; i < L; i++) c[cl[i]]++;
+            for (int i = 1; i <= nc; i++) c[i] += c[i - 1];
+            for (int i = L - 1; i >= 0; i--) p[k][--c[cl[(p[k ^ 1][i] + k * l) % L]]] = p[k ^ 1][i];
         }
-        sort(p, p + L, [](pri& a, pri& b){return a.l < b.l || a.l == b.l && a.r < b.r;});
-        for (int i = 0, nc = -1; i < L; i++) {
-            if (i && p[i].l == p[i - 1].l && p[i].r == p[i - 1].r) c[p[i].i] = nc;
-            else c[p[i].i] = ++nc;
+        nc = -1;
+        for (int i = 0; i < L; i++) {
+            if (i && cl[p0[i]] == cl[p0[i - 1]] && cl[(p0[i] + l) % L] == cl[(p0[i - 1] + l) % L]) cl[p0[i]] = nc;
+            else cl[p0[i]] = ++nc;
         }
     }
-    int bestc = c[0], besti = 0;
+    int bestc = cl[0], besti = 0;
     for (int i = 1; i < L; i++) {
-        if (c[i] < bestc) bestc = c[i], besti = i;
+        if (cl[i] < bestc) bestc = cl[i], besti = i;
     }
     cout << besti << endl;
 
